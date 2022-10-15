@@ -3,19 +3,20 @@ package main
 import (
 	"github.com/whisper612/logger/internal/someservice"
 	cl "github.com/whisper612/logger/pkg/logger/consolelogger"
+	fl "github.com/whisper612/logger/pkg/logger/filelogger"
 )
 
 func main() {
 	consoleLogger := &cl.ConsoleLogger{}
-	// fileLogger := &cl.FileLogger{}
+	fileLogger := &fl.FileLogger{}
 	// telegramLogger := &cl.TelegramLogger{}
 
 	service0 := someservice.NewService(consoleLogger)
-	// service1 := someservice.NewService(fileLogger)
+	service1 := someservice.NewService(fileLogger)
 	// service2 := someservice.NewService(telegramLogger)
 
 	service0.Serve()
-	// service1.Serve()
+	service1.Serve()
 	// service2.Serve()
 }
 

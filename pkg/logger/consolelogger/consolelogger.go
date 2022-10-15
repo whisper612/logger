@@ -6,7 +6,6 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/golang-module/carbon/v2"
-	"github.com/whisper612/logger/pkg/logger"
 	lg "github.com/whisper612/logger/pkg/logger"
 )
 
@@ -52,7 +51,7 @@ func (l *ConsoleLogger) setLabel(value string) error {
 
 func (l *ConsoleLogger) setDatePrefix() error {
 	switch l.prefixDateFormat {
-	case logger.DateFull:
+	case lg.DateFull:
 		l.prefixDate = carbon.Now().ToDateTimeString()
 	case lg.DayMonthHoursMinute:
 		date := strings.Split(carbon.Now().ToDateTimeString(), "-")
