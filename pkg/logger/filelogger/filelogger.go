@@ -2,9 +2,7 @@ package filelogger
 
 import (
 	"os"
-	"strings"
 
-	"github.com/golang-module/carbon/v2"
 	lg "github.com/whisper612/logger/pkg/logger"
 )
 
@@ -16,21 +14,23 @@ const (
 )
 
 type FileLogger struct {
-	label      string
-	prefixDate string
-
+	label            string
+	prefixDate       string
 	prefixDateFormat uint
 }
 
 func (l *FileLogger) internalPrintToFile(log string, label string) error {
-	l.setDatePrefix()
+	l.prefixDate = lg.SetDatePrefix(l.prefixDateFormat)
 	l.setLabel(label)
 
-	f, err := os.OpenFile("../output/log.txt", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0666)
+	f, err := os.OpenFile("./output/log.txt", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0666)
 
+	if err != nil {
+		panic(err)
+	}
 	defer f.Close()
 
-	if _, err = f.WriteString(l.prefixDate + " " + label + "\n"); err != nil {
+	if _, err = f.WriteString(l.prefixDate + " " + label + " " + log + "\n"); err != nil {
 		panic(err)
 	}
 
@@ -39,32 +39,6 @@ func (l *FileLogger) internalPrintToFile(log string, label string) error {
 
 func (l *FileLogger) setLabel(value string) error {
 	l.label = value
-
-	return nil
-}
-
-func (l *FileLogger) setDatePrefix() error {
-	switch l.prefixDateFormat {
-	case lg.DateFull:
-		l.prefixDate = carbon.Now().ToDateTimeString()
-	case lg.DayMonthHoursMinute:
-		date := strings.Split(carbon.Now().ToDateTimeString(), "-")
-		day := strings.Split(date[2], " ")[0]
-		time := strings.Split(carbon.Now().ToDateTimeString(), ":")
-		hour := strings.Split(time[0], " ")[1]
-		l.prefixDate = date[1] + "-" + day + " " + hour + ":" + time[1]
-	case lg.DayMonthYear:
-		date := strings.Split(carbon.Now().ToDateTimeString(), "-")
-		day := strings.Split(date[2], " ")[0]
-		l.prefixDate = day + "-" + date[1] + "-" + date[0]
-	case lg.DayMonth:
-		date := strings.Split(carbon.Now().ToDateTimeString(), "-")
-		day := strings.Split(date[2], " ")[0]
-		l.prefixDate = date[1] + "-" + day
-	case lg.HoursMinuteSeconds:
-		l.prefixDate = carbon.Now().ToTimeString()
-
-	}
 
 	return nil
 }
