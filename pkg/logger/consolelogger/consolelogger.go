@@ -17,7 +17,7 @@ const (
 type ConsoleLogger struct {
 	label            string
 	prefixDate       string
-	prefixDateFormat uint
+	prefixDateFormat string
 }
 
 func (l *ConsoleLogger) internalPrint(log string, label string) error {
@@ -47,7 +47,7 @@ func (l *ConsoleLogger) setLabel(value string) error {
 	return nil
 }
 
-func (l *ConsoleLogger) SetDatePrefixFormat(value uint) error {
+func (l *ConsoleLogger) SetDatePrefixFormat(value string) error {
 	l.prefixDateFormat = value
 
 	return nil

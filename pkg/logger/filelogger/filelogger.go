@@ -16,7 +16,7 @@ const (
 type FileLogger struct {
 	label            string
 	prefixDate       string
-	prefixDateFormat uint
+	prefixDateFormat string
 }
 
 func (l *FileLogger) internalPrintToFile(log string, label string) error {
@@ -43,7 +43,7 @@ func (l *FileLogger) setLabel(value string) error {
 	return nil
 }
 
-func (l *FileLogger) SetDatePrefixFormat(value uint) error {
+func (l *FileLogger) SetDatePrefixFormat(value string) error {
 	l.prefixDateFormat = value
 
 	return nil

@@ -18,20 +18,23 @@ func NewService(logger lg.Logger) *SomeService {
 }
 
 func (s SomeService) Serve() {
-	s.logger.SetDatePrefixFormat(lg.DateFull)
+	s.logger.SetDatePrefixFormat("")
 	s.logger.Log("log!")
 	s.logger.Warn("warn!")
 	s.logger.Error(errors.New("error!"))
 
-	s.logger.SetDatePrefixFormat(lg.DayMonthHoursMinute)
+	s.logger.SetDatePrefixFormat("d-m H:m")
 	s.logger.Error(errors.New("error!"))
 
-	s.logger.SetDatePrefixFormat(lg.DayMonthYear)
+	s.logger.SetDatePrefixFormat("d-m-Y")
 	s.logger.Error(errors.New("error!"))
 
-	s.logger.SetDatePrefixFormat(lg.DayMonth)
+	s.logger.SetDatePrefixFormat("d-m")
 	s.logger.Error(errors.New("error!"))
 
-	s.logger.SetDatePrefixFormat(lg.HoursMinuteSeconds)
+	s.logger.SetDatePrefixFormat("H:i:s")
+	s.logger.Error(errors.New("error!"))
+
+	s.logger.SetDatePrefixFormat("")
 	s.logger.Error(errors.New("error!"))
 }
