@@ -3,7 +3,7 @@ package telegramlogger
 import (
 	"fmt"
 
-	tgapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	bt "github.com/SakoDroid/telego"
 	lg "github.com/whisper612/logger/pkg/logger"
 )
 
@@ -18,35 +18,17 @@ type TelegramLogger struct {
 	label            string
 	prefixDate       string
 	prefixDateFormat string
+	Bot              *bt.Bot
 }
 
-func (l *TelegramLogger) internalPrintToFile(log string, label string) error {
+func (l *TelegramLogger) internalPrintToTgMessage(log string, label string) error {
 	l.prefixDate = lg.SetDatePrefix(l.prefixDateFormat)
 	l.setLabel(label)
+	// l.prefixDate+" "+label+" "+log
 
-	// да, токен ужаснейшим образом просто спален
-	bot, err := tgapi.NewBotAPI("828961048:AAFyRStUfD1J9ryLvWYRUb1r1MaTMcNkmjA")
+	_, err := l.Bot.SendMessage(294217967, l.prefixDate+" "+label+" "+log, "", 0, false, false)
 	if err != nil {
-		panic(err)
-	}
-
-	bot.Debug = true
-
-	u := tgapi.NewUpdate(0)
-	u.Timeout = 500
-
-	updates := bot.GetUpdatesChan(u)
-	for update := range updates {
-		if update.Message != nil {
-			fmt.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
-
-			// вот пока тут заглушка стоит
-			// мб в someservice их копить в какую-то сущность и отслыать как строку *thinking face*
-			msg := tgapi.NewMessage(update.Message.Chat.ID, l.prefixDate+" "+label+" "+log)
-			msg.ReplyToMessageID = update.Message.MessageID
-
-			bot.Send(msg)
-		}
+		fmt.Println(err)
 	}
 
 	return nil
@@ -65,25 +47,25 @@ func (l *TelegramLogger) SetDatePrefixFormat(value string) error {
 }
 
 func (l *TelegramLogger) Log(msg string) error {
-	err := l.internalPrintToFile(msg, log)
+	err := l.internalPrintToTgMessage(msg, log)
 
 	return err
 }
 
 func (l *TelegramLogger) Warn(msg string) error {
-	err := l.internalPrintToFile(msg, warn)
+	err := l.internalPrintToTgMessage(msg, warn)
 
 	return err
 }
 
 func (l *TelegramLogger) Error(msg error) error {
-	err := l.internalPrintToFile(msg.Error(), err)
+	err := l.internalPrintToTgMessage(msg.Error(), err)
 
 	return err
 }
 
 func (l *TelegramLogger) Fatal(msg error) error {
-	err := l.internalPrintToFile(msg.Error(), fatal)
+	err := l.internalPrintToTgMessage(msg.Error(), fatal)
 
 	if err != nil {
 		return err

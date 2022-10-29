@@ -1,6 +1,7 @@
 package filelogger
 
 import (
+	"errors"
 	"os"
 
 	lg "github.com/whisper612/logger/pkg/logger"
@@ -20,21 +21,29 @@ type FileLogger struct {
 }
 
 func (l *FileLogger) internalPrintToFile(log string, label string) error {
+
 	l.prefixDate = lg.SetDatePrefix(l.prefixDateFormat)
 	l.setLabel(label)
 
-	f, err := os.OpenFile("./output/log.txt", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0666)
-
-	if err != nil {
-		panic(err)
+	if _, err := os.Stat("./output/log.txt"); err == nil {
+		file, err := os.OpenFile("./output/log.txt", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0666)
+		defer file.Close()
+		if _, err = file.WriteString(l.prefixDate + " " + label + " " + log + "\n"); err != nil {
+			return err
+		}
+	} else if errors.Is(err, os.ErrNotExist) {
+		// вот тут костыль
+		// TODO сделать проверку директории
+		file, err := os.Create("log.txt")
+		defer file.Close()
+		if _, err = file.WriteString(l.prefixDate + " " + label + " " + log + "\n"); err != nil {
+			return err
+		}
+	} else {
+		return err
 	}
-	defer f.Close()
 
-	if _, err = f.WriteString(l.prefixDate + " " + label + " " + log + "\n"); err != nil {
-		panic(err)
-	}
-
-	return err
+	return nil
 }
 
 func (l *FileLogger) setLabel(value string) error {
