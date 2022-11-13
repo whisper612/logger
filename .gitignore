@@ -1,3 +1,6 @@
 /output
+/cmd/configs.json
 .vs
 .vscode
+configs.json
+log.txt

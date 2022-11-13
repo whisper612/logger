@@ -2,6 +2,7 @@ package telegramlogger
 
 import (
 	"fmt"
+	"os"
 
 	bt "github.com/SakoDroid/telego"
 	lg "github.com/whisper612/logger/pkg/logger"
@@ -21,17 +22,36 @@ type TelegramLogger struct {
 	Bot              *bt.Bot
 }
 
-func (l *TelegramLogger) internalPrintToTgMessage(log string, label string) error {
-	l.prefixDate = lg.SetDatePrefix(l.prefixDateFormat)
-	l.setLabel(label)
-	// l.prefixDate+" "+label+" "+log
-
-	_, err := l.Bot.SendMessage(294217967, l.prefixDate+" "+label+" "+log, "", 0, false, false)
+func (l *TelegramLogger) SendMessage() error {
+	path, err := os.Getwd()
 	if err != nil {
 		fmt.Println(err)
+		return err
+	}
+	logFile, err := os.Open(path + "/output/log.txt")
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	msg := l.Bot.SendDocument(294217967, 0, "Your's logs, Sir", "")
+	_, err = msg.SendByFile(logFile, false, false)
+	if err != nil {
+		fmt.Println(err)
+		return err
 	}
 
 	return nil
+}
+
+func (l *TelegramLogger) internalPrintToTgMessage(log string, label string) error {
+	l.prefixDate = lg.SetDatePrefix(l.prefixDateFormat)
+	l.setLabel(label)
+
+	textLog := l.prefixDate + " " + label + " " + log + "\n"
+	err := lg.PrintToFile(textLog)
+
+	return err
 }
 
 func (l *TelegramLogger) setLabel(value string) error {

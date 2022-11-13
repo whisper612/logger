@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	lg "github.com/whisper612/logger/pkg/logger"
+	tg "github.com/whisper612/logger/pkg/logger/telegramlogger"
 )
 
 type SomeService struct {
@@ -18,6 +19,14 @@ func NewService(logger lg.Logger) *SomeService {
 }
 
 func (s SomeService) Serve() {
+	defer func() {
+		var i interface{} = s.logger
+		tl, ok := i.(*tg.TelegramLogger)
+		if ok {
+			tl.SendMessage()
+		}
+	}()
+
 	s.logger.SetDatePrefixFormat("")
 	s.logger.Log("log!")
 	s.logger.Warn("warn!")
